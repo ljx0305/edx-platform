@@ -6,25 +6,31 @@ Does not include any access control, be sure to check access before calling.
 
 import json
 import logging
-from django.contrib.auth.models import User
-from django.conf import settings
-from django.core.urlresolvers import reverse
-from django.core.mail import send_mail
-from django.utils.translation import override as override_language
 
-from course_modes.models import CourseMode
-from courseware.models import StudentModule
-from edxmako.shortcuts import render_to_string
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
+from django.utils.translation import override as override_language
+from eventtracking import tracker
 from lms.djangoapps.grades.scores import weighted_score
 from lms.djangoapps.grades.signals.signals import PROBLEM_SCORE_CHANGED
 from openedx.core.djangoapps.lang_pref import LANGUAGE_KEY
 from openedx.core.djangoapps.site_configuration import helpers as configuration_helpers
 from openedx.core.djangoapps.user_api.models import UserPreference
 from submissions import api as sub_api  # installed from the edx-submissions repository
-from student.models import CourseEnrollment, CourseEnrollmentAllowed, anonymous_id_for_user
 from xmodule.modulestore.django import modulestore
 from xmodule.modulestore.exceptions import ItemNotFoundError
 
+from course_modes.models import CourseMode
+from courseware.models import StudentModule
+from edxmako.shortcuts import render_to_string
+from student.models import CourseEnrollment, CourseEnrollmentAllowed, anonymous_id_for_user
+from track.request_id_utils import (
+    create_new_user_action_id,
+    set_user_action_type,
+    get_user_action_id
+)
 
 log = logging.getLogger(__name__)
 
@@ -267,7 +273,26 @@ def reset_student_attempts(course_id, student, module_state_key, requesting_user
 
     if delete_module:
         module_to_reset.delete()
-        _fire_score_changed_for_block(course_id, student, block, module_state_key)
+        create_new_user_action_id()
+        grade_update_root_type = 'edx.grades.problem.state_deleted'
+        set_user_action_type(grade_update_root_type)
+        tracker.emit(
+            unicode(grade_update_root_type),
+            {
+                'user_id': unicode(student.id),
+                'course_id': unicode(course_id),
+                'problem_id': unicode(module_state_key),
+                'instructor_username': unicode(requesting_user.username),
+                'user_action_id': unicode(get_user_action_id()),
+                'user_action_type': unicode(grade_update_root_type),
+            }
+        )
+        _fire_score_changed_for_block(
+            course_id,
+            student,
+            block,
+            module_state_key,
+        )
     else:
         _reset_module_attempts(module_to_reset)
 
@@ -288,7 +313,12 @@ def _reset_module_attempts(studentmodule):
     studentmodule.save()
 
 
-def _fire_score_changed_for_block(course_id, student, block, module_state_key):
+def _fire_score_changed_for_block(
+        course_id,
+        student,
+        block,
+        module_state_key,
+):
     """
     Fires a PROBLEM_SCORE_CHANGED event for the given module. The earned points are
     always zero. We must retrieve the possible points from the XModule, as
@@ -301,6 +331,7 @@ def _fire_score_changed_for_block(course_id, student, block, module_state_key):
         else:
             points_earned, points_possible = weighted_score(0, max_score, getattr(block, 'weight', None))
     else:
+        # if the block no longer exists or does not have a score, no points are possible
         points_earned, points_possible = 0, 0
 
     PROBLEM_SCORE_CHANGED.send(
