@@ -335,10 +335,10 @@ class TestReportMixin(object):
             file_index (int): Describes which report store file to
                 open.  Files are ordered by last modified date, and 0
                 corresponds to the most recently modified file.
-            verify_order (boolean): When True, we verify that both the
-                content and order of `expected_rows` matches the
-                actual csv rows.  When False (default), we only verify
-                that the content matches.
+            verify_order (boolean): When True (default), we verify that
+                both the content and order of `expected_rows` matches
+                the actual csv rows.  When False, we only verify that
+                the content matches.
             ignore_other_columns (boolean): When True, we verify that `expected_rows`
                 contain data which is the subset of actual csv rows.
         """

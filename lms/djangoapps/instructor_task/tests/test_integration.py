@@ -580,7 +580,8 @@ class TestGradeReportConditionalContent(TestReportMixin, TestConditionalContent,
                 )
                 for student_grades in students_grades for student, grades in student_grades.iteritems()
             ],
-            ignore_other_columns=ignore_other_columns
+            ignore_other_columns=ignore_other_columns,
+            verify_order=False,
         )
 
     def test_both_groups_problems(self):
@@ -604,10 +605,22 @@ class TestGradeReportConditionalContent(TestReportMixin, TestConditionalContent,
             self.verify_csv_task_success(result)
             self.verify_grades_in_csv(
                 [
-                    {self.student_a: {'grade': '1.0', 'HW': '1.0'}},
-                    {self.student_b: {'grade': '0.5', 'HW': '0.5'}}
+                    {
+                        self.student_a: {
+                            'grade': '1.0',
+                            'Homework 1: Problem (Earned)': '2.0',
+                            'Homework 1: Problem (Possible)': '2.0',
+                        }
+                    },
+                    {
+                        self.student_b: {
+                            'grade': '0.5',
+                            'Homework 1: Problem (Earned)': '1.0',
+                            'Homework 1: Problem (Possible)': '2.0',
+                        }
+                    },
                 ],
-                ignore_other_columns=True
+                ignore_other_columns=True,
             )
 
     def test_one_group_problem(self):
@@ -627,8 +640,20 @@ class TestGradeReportConditionalContent(TestReportMixin, TestConditionalContent,
             self.verify_csv_task_success(result)
             self.verify_grades_in_csv(
                 [
-                    {self.student_a: {'grade': '1.0', 'HW': '1.0'}},
-                    {self.student_b: {'grade': '0.0', 'HW': '0.0'}}
+                    {
+                        self.student_a: {
+                            'grade': '1.0',
+                            'Homework 1: Problem (Earned)': '2.0',
+                            'Homework 1: Problem (Possible)': '2.0',
+                        },
+                    },
+                    {
+                        self.student_b: {
+                            'grade': '0.0',
+                            'Homework 1: Problem (Earned)': 'Not Accessible',
+                            'Homework 1: Problem (Possible)': 'Not Accessible',
+                        }
+                    },
                 ],
                 ignore_other_columns=True
             )
