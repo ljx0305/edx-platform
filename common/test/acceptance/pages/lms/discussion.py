@@ -542,7 +542,7 @@ class InlineDiscussionThreadPage(DiscussionThreadPage):
     def __init__(self, browser, thread_id):
         super(InlineDiscussionThreadPage, self).__init__(
             browser,
-            "body.courseware .discussion-module #thread_{thread_id}".format(thread_id=thread_id)
+            "body.courseware .discussion-module .forum-nav-thread-link[{thread_id}]".format(thread_id=thread_id)
         )
 
     def expand(self):
