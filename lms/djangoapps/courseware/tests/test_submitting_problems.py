@@ -164,7 +164,7 @@ class TestSubmittingProblems(ModuleStoreTestCase, LoginEnrollmentTestCase, Probl
 
     def _stop_signal_patch(self):
         """
-        Stops the signal patch for the PROBLEM_SCORE_CHANGED event.
+        Stops the signal patch for the PROBLEM_WEIGHTED_SCORE_CHANGED event.
         In case a test wants to test with the event actually
         firing.
         """

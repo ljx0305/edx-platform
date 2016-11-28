@@ -28,9 +28,9 @@ log = getLogger(__name__)
 def submissions_score_set_handler(sender, **kwargs):  # pylint: disable=unused-argument
     """
     Consume the score_set signal defined in the Submissions API, and convert it
-    to a PROBLEM_SCORE_CHANGED signal defined in this module. Converts the unicode keys
-    for user, course and item into the standard representation for the
-    PROBLEM_SCORE_CHANGED signal.
+    to a PROBLEM_WEIGHTED_SCORE_CHANGED signal defined in this module. Converts the
+    unicode keys for user, course and item into the standard representation for the
+    PROBLEM_WEIGHTED_SCORE_CHANGED signal.
 
     This method expects that the kwargs dictionary will contain the following
     entries (See the definition of score_set):
@@ -51,7 +51,7 @@ def submissions_score_set_handler(sender, **kwargs):  # pylint: disable=unused-a
     PROBLEM_WEIGHTED_SCORE_CHANGED.send(
         sender=None,
         weighted_earned=points_earned,
-        weight_possible=points_possible,
+        weighted_possible=points_possible,
         user_id=user.id,
         course_id=course_id,
         usage_id=usage_id
@@ -62,9 +62,9 @@ def submissions_score_set_handler(sender, **kwargs):  # pylint: disable=unused-a
 def submissions_score_reset_handler(sender, **kwargs):  # pylint: disable=unused-argument
     """
     Consume the score_reset signal defined in the Submissions API, and convert
-    it to a PROBLEM_SCORE_CHANGED signal indicating that the score has been set to 0/0.
-    Converts the unicode keys for user, course and item into the standard
-    representation for the PROBLEM_SCORE_CHANGED signal.
+    it to a PROBLEM_WEIGHTED_SCORE_CHANGED signal indicating that the score
+    has been set to 0/0. Converts the unicode keys for user, course and item
+    into the standard representation for the PROBLEM_WEIGHTED_SCORE_CHANGED signal.
 
     This method expects that the kwargs dictionary will contain the following
     entries (See the definition of score_reset):
@@ -140,6 +140,7 @@ def problem_raw_score_changed_handler(sender, **kwargs):
         course_id=kwargs['course_id'],
         usage_id=kwargs['usage_id'],
         only_if_higher=kwargs['only_if_higher'],
+        score_deleted=kwargs.get('score_deleted', False),
     )
 
 

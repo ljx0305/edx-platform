@@ -23,7 +23,7 @@ log = logging.getLogger("edx.lti_provider")
 def score_changed_handler(sender, **kwargs):  # pylint: disable=unused-argument
     """
     Consume signals that indicate score changes. See the definition of
-    PROBLEM_SCORE_CHANGED for a description of the signal.
+    PROBLEM_WEIGHTED_SCORE_CHANGED for a description of the signal.
     """
     points_possible = kwargs.get('weighted_possible', None)
     points_earned = kwargs.get('weighted_earned', None)

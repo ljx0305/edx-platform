@@ -289,9 +289,9 @@ def _reset_module_attempts(studentmodule):
 
 def _fire_score_changed_for_block(course_id, student, block, module_state_key):
     """
-    Fires a PROBLEM_SCORE_CHANGED event for the given module. The earned points are
-    always zero. We must retrieve the possible points from the XModule, as
-    noted below.
+    Fires a PROBLEM_WEIGHTED_SCORE_CHANGED event for the given module.
+    The earned points are always zero. We must retrieve the possible points
+    from the XModule, as noted below.
     """
     if block and block.has_score:
         max_score = block.max_score()
@@ -311,6 +311,7 @@ def _fire_score_changed_for_block(course_id, student, block, module_state_key):
         course_id=unicode(course_id),
         usage_id=unicode(module_state_key),
         score_deleted=True,
+        only_if_higher=False,
     )
 
 

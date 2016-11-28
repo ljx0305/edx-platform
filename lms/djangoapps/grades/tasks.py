@@ -69,7 +69,7 @@ def recalculate_subsection_grade(
         user_id,
         usage_id,
         weighted_earned,
-        weighted_earned,
+        weighted_possible,
         score_deleted,
     )
 

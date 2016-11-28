@@ -45,8 +45,8 @@ PROBLEM_WEIGHTED_SCORE_CHANGED = Signal(
 
 # Signal that indicates that a user's score for a problem has been published
 # for possible persistence and update.  Typically, most clients should listen
-# to the PROBLEM_SCORE_CHANGED signal instead, since that is signalled only after the
-# problem's score is changed.
+# to the PROBLEM_WEIGHTED_SCORE_CHANGED signal instead, since that is signalled
+# only after the problem's score is changed.
 SCORE_PUBLISHED = Signal(
     providing_args=[
         'block',  # Course block object
@@ -60,8 +60,8 @@ SCORE_PUBLISHED = Signal(
 
 
 # Signal that indicates that a user's score for a subsection has been updated.
-# This is a downstream signal of PROBLEM_SCORE_CHANGED sent for each affected containing
-# subsection.
+# This is a downstream signal of PROBLEM_WEIGHTED_SCORE_CHANGED sent for each
+# affected containing subsection.
 SUBSECTION_SCORE_CHANGED = Signal(
     providing_args=[
         'course',  # Course object

@@ -12,7 +12,7 @@ from xmodule.modulestore.django import modulestore
 @receiver(PROBLEM_WEIGHTED_SCORE_CHANGED)
 def handle_score_changed(**kwargs):
     """
-    Receives the PROBLEM_SCORE_CHANGED signal sent by LMS when a student's score has changed
+    Receives the PROBLEM_WEIGHTED_SCORE_CHANGED signal sent by LMS when a student's score has changed
     for a given component and triggers the evaluation of any milestone relationships
     which are attached to the updated content.
 
