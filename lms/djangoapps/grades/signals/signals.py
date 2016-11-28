@@ -4,19 +4,39 @@ Grades related signals.
 from django.dispatch import Signal
 
 
-# Signal that indicates that a user's score for a problem has been updated.
-# This signal is generated when a scoring event occurs either within the core
-# platform or in the Submissions module. Note that this signal will be triggered
+# Signal that indicates that a user's raw score for a problem has been updated.
+# This signal is generated when a scoring event occurs within the core
+# platform. Note that this signal will be triggered
 # regardless of the new and previous values of the score (i.e. it may be the
 # case that this signal is generated when a user re-attempts a problem but
 # receives the same score).
-PROBLEM_SCORE_CHANGED = Signal(
+PROBLEM_RAW_SCORE_CHANGED = Signal(
     providing_args=[
         'user_id',  # Integer User ID
         'course_id',  # Unicode string representing the course
         'usage_id',  # Unicode string indicating the courseware instance
-        'points_earned',   # Score obtained by the user
-        'points_possible',  # Maximum score available for the exercise
+        'raw_earned',   # Score obtained by the user
+        'raw_possible',  # Maximum score available for the exercise
+        'weight',  # Weight of the problem
+        'only_if_higher',   # Boolean indicating whether updates should be
+                            # made only if the new score is higher than previous.
+    ]
+)
+
+# Signal that indicates that a user's weighted score for a problem has been updated.
+# This signal is generated when a scoring event occurs in the Submissions module
+# or a PROBLEM_RAW_SCORE_CHANGED event is handled in the core platform.
+# Note that this signal will be triggered
+# regardless of the new and previous values of the score (i.e. it may be the
+# case that this signal is generated when a user re-attempts a problem but
+# receives the same score).
+PROBLEM_WEIGHTED_SCORE_CHANGED = Signal(
+    providing_args=[
+        'user_id',  # Integer User ID
+        'course_id',  # Unicode string representing the course
+        'usage_id',  # Unicode string indicating the courseware instance
+        'weighted_earned',   # Score obtained by the user
+        'weighted_possible',  # Maximum score available for the exercise
         'only_if_higher',   # Boolean indicating whether updates should be
                             # made only if the new score is higher than previous.
     ]
